@@ -36,21 +36,21 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ProductosController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)('/buscarPorPalabraClave/'),
-    __param(0, (0, common_1.Query)('keywords', new common_1.ParseArrayPipe({ items: String, separator: ',' }))),
+    (0, common_1.Get)("/buscarPorPalabraClave/"),
+    __param(0, (0, common_1.Query)("keywords", new common_1.ParseArrayPipe({ items: String, separator: "," }))),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Array]),
     __metadata("design:returntype", void 0)
 ], ProductosController.prototype, "findByKeyWord", null);
 __decorate([
-    (0, common_1.Get)('categoria/'),
-    __param(0, (0, common_1.Query)('param1')),
+    (0, common_1.Get)("categoria/"),
+    __param(0, (0, common_1.Query)("param1")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], ProductosController.prototype, "findByCategory", null);
 ProductosController = __decorate([
-    (0, common_1.Controller)('productos'),
+    (0, common_1.Controller)("productos"),
     __metadata("design:paramtypes", [producto_service_1.ProductosService])
 ], ProductosController);
 exports.ProductosController = ProductosController;

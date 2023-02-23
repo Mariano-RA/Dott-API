@@ -11,12 +11,14 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
+const dolar_module_1 = require("./dolar/dolar.module");
 const producto_module_1 = require("./productos/producto.module");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            dolar_module_1.DolaresModule,
             producto_module_1.ProductosModule,
             typeorm_1.TypeOrmModule.forRoot({
                 type: 'sqlite',

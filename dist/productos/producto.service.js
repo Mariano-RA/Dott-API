@@ -42,9 +42,9 @@ let ProductosService = class ProductosService {
     async findByKeyWord(keywords) {
         const productos = await this.productoRepository.find();
         const listadoProductos = [];
-        const palabra1 = (keywords[0] != null) ? keywords[0] : '';
-        const palabra2 = (keywords[1] != null) ? keywords[1] : '';
-        const palabra3 = (keywords[2] != null) ? keywords[2] : '';
+        const palabra1 = keywords[0] != null ? keywords[0] : "";
+        const palabra2 = keywords[1] != null ? keywords[1] : "";
+        const palabra3 = keywords[2] != null ? keywords[2] : "";
         productos
             .filter((x) => x.producto.toLowerCase().includes(palabra1.toLowerCase()) &&
             x.producto.toLowerCase().includes(palabra2.toLowerCase()) &&
