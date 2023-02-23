@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductosService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
+const dolar_service_1 = require("../dolar/dolar.service");
 const typeorm_2 = require("typeorm");
 const productoDto_1 = require("./dto/productoDto");
 const producto_entity_1 = require("./entities/producto.entity");
@@ -24,6 +25,7 @@ let ProductosService = class ProductosService {
     }
     async findAll() {
         const productos = await this.productoRepository.find();
+        const valorDolar = await this.dolaresService.obtenerUltimo();
         const listadoProductos = [];
         productos.forEach((prod) => {
             const dto = new productoDto_1.ProductoDto();
@@ -31,10 +33,10 @@ let ProductosService = class ProductosService {
             dto.producto = prod.producto;
             dto.categoria = prod.categoria;
             dto.precioEfectivo =
-                Math.round(prod.precioEfectivo * 100) / 100;
+                Math.round(prod.precio * valorDolar.precioDolar * 100) / 100;
             dto.precioTarjeta =
-                Math.round(prod.precioTarjeta * 100) / 100;
-            dto.Cuota = Math.round((prod.precioTarjeta / 12) * 100) / 100;
+                Math.round(prod.precio * valorDolar.precioTarjeta * 100) / 100;
+            dto.Cuota = Math.round((dto.precioTarjeta / 12) * 100) / 100;
             listadoProductos.push(dto);
         });
         return listadoProductos;
@@ -42,6 +44,7 @@ let ProductosService = class ProductosService {
     async findByKeyWord(keywords) {
         const productos = await this.productoRepository.find();
         const listadoProductos = [];
+        const valorDolar = await this.dolaresService.obtenerUltimo();
         const palabra1 = keywords[0] != null ? keywords[0] : "";
         const palabra2 = keywords[1] != null ? keywords[1] : "";
         const palabra3 = keywords[2] != null ? keywords[2] : "";
@@ -55,17 +58,18 @@ let ProductosService = class ProductosService {
             dto.producto = prod.producto;
             dto.categoria = prod.categoria;
             dto.precioEfectivo =
-                Math.round(prod.precioEfectivo * 100) / 100;
+                Math.round(prod.precio * valorDolar.precioDolar * 100) / 100;
             dto.precioTarjeta =
-                Math.round(prod.precioTarjeta * 100) / 100;
+                Math.round(prod.precio * valorDolar.precioTarjeta * 100) / 100;
             dto.Cuota =
-                Math.round((prod.precioTarjeta / 12) * 100) / 100;
+                Math.round((dto.precioTarjeta / 12) * 100) / 100;
             listadoProductos.push(dto);
         });
         return listadoProductos;
     }
     async findByCategory(param1) {
         const productos = await this.productoRepository.find();
+        const valorDolar = await this.dolaresService.obtenerUltimo();
         const listadoProductos = [];
         productos
             .filter((x) => x.categoria.toLowerCase().includes(param1.toLowerCase()))
@@ -75,16 +79,20 @@ let ProductosService = class ProductosService {
             dto.producto = prod.producto;
             dto.categoria = prod.categoria;
             dto.precioEfectivo =
-                Math.round(prod.precioEfectivo * 100) / 100;
+                Math.round(prod.precio * valorDolar.precioDolar * 100) / 100;
             dto.precioTarjeta =
-                Math.round(prod.precioTarjeta * 100) / 100;
+                Math.round(prod.precio * valorDolar.precioTarjeta * 100) / 100;
             dto.Cuota =
-                Math.round((prod.precioTarjeta / 12) * 100) / 100;
+                Math.round((dto.precioTarjeta / 12) * 100) / 100;
             listadoProductos.push(dto);
         });
         return listadoProductos;
     }
 };
+__decorate([
+    (0, common_1.Inject)(dolar_service_1.DolaresService),
+    __metadata("design:type", dolar_service_1.DolaresService)
+], ProductosService.prototype, "dolaresService", void 0);
 ProductosService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(producto_entity_1.Producto)),

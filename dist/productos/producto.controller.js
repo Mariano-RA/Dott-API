@@ -19,7 +19,7 @@ let ProductosController = class ProductosController {
     constructor(productosService) {
         this.productosService = productosService;
     }
-    findAll() {
+    async findAll() {
         return this.productosService.findAll();
     }
     findByKeyWord(keywords) {
@@ -33,7 +33,7 @@ __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], ProductosController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)("/buscarPorPalabraClave/"),

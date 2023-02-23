@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { DeepPartial, Repository } from "typeorm";
 import { DolarDto } from "./dto/dolarDto";
 import { Dolar } from "./entities/dolar.entity";
 
@@ -13,10 +13,14 @@ export class DolaresService {
   ) {}
 
   async obtenerUltimo(){
-    const valorDolar = await this.dolarRepository.query(
+    const resDolar = await this.dolarRepository.query(
       "select id, precioDolar, precioTarjeta from Dolares order by id desc LIMIT 1"
     );
-    return valorDolar;
+    const dolarFinal = new Dolar();
+    dolarFinal.id = resDolar[0].id;
+    dolarFinal.precioDolar = resDolar[0].precioDolar;
+    dolarFinal.precioTarjeta = resDolar[0].precioTarjeta;
+    return dolarFinal;
   }
 
   async agregarValor(dolarDto: DolarDto) {

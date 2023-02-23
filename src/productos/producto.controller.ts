@@ -1,14 +1,14 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Get, ParseArrayPipe, Query } from "@nestjs/common";
-import { DolaresService } from "src/dolar/dolar.service";
+import { Controller, Get, Inject, ParseArrayPipe, Query } from "@nestjs/common";
 import { ProductosService } from "./producto.service";
 
 @Controller("productos")
 export class ProductosController {
-  constructor(private readonly productosService: ProductosService) {}
+  constructor(private readonly productosService: ProductosService,
+    ) {}
 
   @Get()
-  findAll() {
+   async findAll() {
     return this.productosService.findAll();
   }
 
