@@ -29,7 +29,7 @@ export class ProductosService {
         ) / 100;
       dto.precioTarjeta =
         Math.round(
-          (prod.precio as number) * (valorDolar.precioTarjeta as number) * 100
+          (prod.precio as number) * (valorDolar.precioTarjeta as number) * (valorDolar.precioDolar as number) * 100
         ) / 100;
       dto.Cuota = Math.round(((dto.precioTarjeta as number) / 12) * 100) / 100;
       listadoProductos.push(dto);
@@ -62,7 +62,7 @@ export class ProductosService {
           ) / 100;
         dto.precioTarjeta =
           Math.round(
-            (prod.precio as number) * (valorDolar.precioTarjeta as number) * 100
+            (prod.precio as number) * (valorDolar.precioTarjeta as number) * (valorDolar.precioDolar as number) * 100
           ) / 100;
         dto.Cuota =
           Math.round(((dto.precioTarjeta as number) / 12) * 100) / 100;
@@ -88,7 +88,7 @@ export class ProductosService {
           ) / 100;
         dto.precioTarjeta =
           Math.round(
-            (prod.precio as number) * (valorDolar.precioTarjeta as number) * 100
+            (prod.precio as number) * (valorDolar.precioTarjeta as number) * (valorDolar.precioDolar as number) * 100
           ) / 100;
         dto.Cuota =
           Math.round(((dto.precioTarjeta as number) / 12) * 100) / 100;

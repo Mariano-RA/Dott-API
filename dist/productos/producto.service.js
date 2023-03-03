@@ -35,7 +35,7 @@ let ProductosService = class ProductosService {
             dto.precioEfectivo =
                 Math.round(prod.precio * valorDolar.precioDolar * 100) / 100;
             dto.precioTarjeta =
-                Math.round(prod.precio * valorDolar.precioTarjeta * 100) / 100;
+                Math.round(prod.precio * valorDolar.precioTarjeta * valorDolar.precioDolar * 100) / 100;
             dto.Cuota = Math.round((dto.precioTarjeta / 12) * 100) / 100;
             listadoProductos.push(dto);
         });
@@ -60,7 +60,7 @@ let ProductosService = class ProductosService {
             dto.precioEfectivo =
                 Math.round(prod.precio * valorDolar.precioDolar * 100) / 100;
             dto.precioTarjeta =
-                Math.round(prod.precio * valorDolar.precioTarjeta * 100) / 100;
+                Math.round(prod.precio * valorDolar.precioTarjeta * valorDolar.precioDolar * 100) / 100;
             dto.Cuota =
                 Math.round((dto.precioTarjeta / 12) * 100) / 100;
             listadoProductos.push(dto);
@@ -81,7 +81,7 @@ let ProductosService = class ProductosService {
             dto.precioEfectivo =
                 Math.round(prod.precio * valorDolar.precioDolar * 100) / 100;
             dto.precioTarjeta =
-                Math.round(prod.precio * valorDolar.precioTarjeta * 100) / 100;
+                Math.round(prod.precio * valorDolar.precioTarjeta * valorDolar.precioDolar * 100) / 100;
             dto.Cuota =
                 Math.round((dto.precioTarjeta / 12) * 100) / 100;
             listadoProductos.push(dto);
