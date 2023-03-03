@@ -4,5 +4,6 @@ export declare class ProductosController {
     constructor(productosService: ProductosService);
     findAll(): Promise<any[]>;
     findByKeyWord(keywords: String[]): Promise<any[]>;
-    findByCategory(param1: string): Promise<any[]>;
+    findByCategory(category: string): Promise<any[]>;
+    findByKeyWordAndCategory(category: string, keywords: String[]): Promise<any[]>;
 }

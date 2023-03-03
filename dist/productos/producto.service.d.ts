@@ -6,5 +6,6 @@ export declare class ProductosService {
     constructor(productoRepository: Repository<Producto>);
     findAll(): Promise<any[]>;
     findByKeyWord(keywords: String[]): Promise<any[]>;
-    findByCategory(param1: string): Promise<any[]>;
+    findByCategory(category: string): Promise<any[]>;
+    findByKeyWordAndCategory(keywords: String[], category: string): Promise<any[]>;
 }

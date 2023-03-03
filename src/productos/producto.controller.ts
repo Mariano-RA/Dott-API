@@ -12,7 +12,7 @@ export class ProductosController {
     return this.productosService.findAll();
   }
 
-  @Get("/buscarPorPalabraClave/")
+  @Get("/buscarPorPalabrasClaves/")
   findByKeyWord(
     @Query("keywords", new ParseArrayPipe({ items: String, separator: "," }))
     keywords: String[]
@@ -21,7 +21,17 @@ export class ProductosController {
   }
 
   @Get("categoria/")
-  findByCategory(@Query("param1") param1: string) {
-    return this.productosService.findByCategory(param1);
+  findByCategory(@Query("category") category: string) {
+    return this.productosService.findByCategory(category);
+  }
+
+  @Get("palabrasClavesYCategoria/")
+  findByKeyWordAndCategory(
+    @Query("category") category: string,
+    @Query("keywords", new ParseArrayPipe({ items: String, separator: "," }))
+    keywords: String[]
+    ) 
+    {
+    return this.productosService.findByKeyWordAndCategory(keywords, category);
   }
 }

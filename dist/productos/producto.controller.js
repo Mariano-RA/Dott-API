@@ -25,8 +25,11 @@ let ProductosController = class ProductosController {
     findByKeyWord(keywords) {
         return this.productosService.findByKeyWord(keywords);
     }
-    findByCategory(param1) {
-        return this.productosService.findByCategory(param1);
+    findByCategory(category) {
+        return this.productosService.findByCategory(category);
+    }
+    findByKeyWordAndCategory(category, keywords) {
+        return this.productosService.findByKeyWordAndCategory(keywords, category);
     }
 };
 __decorate([
@@ -36,7 +39,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProductosController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)("/buscarPorPalabraClave/"),
+    (0, common_1.Get)("/buscarPorPalabrasClaves/"),
     __param(0, (0, common_1.Query)("keywords", new common_1.ParseArrayPipe({ items: String, separator: "," }))),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Array]),
@@ -44,11 +47,19 @@ __decorate([
 ], ProductosController.prototype, "findByKeyWord", null);
 __decorate([
     (0, common_1.Get)("categoria/"),
-    __param(0, (0, common_1.Query)("param1")),
+    __param(0, (0, common_1.Query)("category")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], ProductosController.prototype, "findByCategory", null);
+__decorate([
+    (0, common_1.Get)("palabrasClavesYCategoria/"),
+    __param(0, (0, common_1.Query)("category")),
+    __param(1, (0, common_1.Query)("keywords", new common_1.ParseArrayPipe({ items: String, separator: "," }))),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Array]),
+    __metadata("design:returntype", void 0)
+], ProductosController.prototype, "findByKeyWordAndCategory", null);
 ProductosController = __decorate([
     (0, common_1.Controller)("productos"),
     __metadata("design:paramtypes", [producto_service_1.ProductosService])

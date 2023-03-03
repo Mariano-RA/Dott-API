@@ -67,12 +67,39 @@ let ProductosService = class ProductosService {
         });
         return listadoProductos;
     }
-    async findByCategory(param1) {
+    async findByCategory(category) {
         const productos = await this.productoRepository.find();
         const valorDolar = await this.dolaresService.obtenerUltimo();
         const listadoProductos = [];
         productos
-            .filter((x) => x.categoria.toLowerCase().includes(param1.toLowerCase()))
+            .filter((x) => x.categoria.toLowerCase().includes(category.toLowerCase()))
+            .forEach((prod) => {
+            const dto = new productoDto_1.ProductoDto();
+            dto.proveedor = prod.proveedor;
+            dto.producto = prod.producto;
+            dto.categoria = prod.categoria;
+            dto.precioEfectivo =
+                Math.round(prod.precio * valorDolar.precioDolar * 100) / 100;
+            dto.precioTarjeta =
+                Math.round(prod.precio * valorDolar.precioTarjeta * valorDolar.precioDolar * 100) / 100;
+            dto.Cuota =
+                Math.round((dto.precioTarjeta / 12) * 100) / 100;
+            listadoProductos.push(dto);
+        });
+        return listadoProductos;
+    }
+    async findByKeyWordAndCategory(keywords, category) {
+        const productos = await this.productoRepository.find();
+        const valorDolar = await this.dolaresService.obtenerUltimo();
+        const listadoProductos = [];
+        const palabra1 = keywords[0] != null ? keywords[0] : "";
+        const palabra2 = keywords[1] != null ? keywords[1] : "";
+        const palabra3 = keywords[2] != null ? keywords[2] : "";
+        productos
+            .filter((x) => x.producto.toLowerCase().includes(palabra1.toLowerCase()) &&
+            x.producto.toLowerCase().includes(palabra2.toLowerCase()) &&
+            x.producto.toLowerCase().includes(palabra3.toLowerCase()) &&
+            x.categoria.toLowerCase().includes(category.toLowerCase()))
             .forEach((prod) => {
             const dto = new productoDto_1.ProductoDto();
             dto.proveedor = prod.proveedor;
