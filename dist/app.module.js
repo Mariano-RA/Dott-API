@@ -21,9 +21,9 @@ AppModule = __decorate([
             dolar_module_1.DolaresModule,
             producto_module_1.ProductosModule,
             typeorm_1.TypeOrmModule.forRoot({
-                type: 'sqlite',
-                database: './database/productosDB',
-                entities: [__dirname + '/**/*entity{.ts,.js}'],
+                type: "sqlite",
+                database: "./database/productosDB.sqlite",
+                entities: [__dirname + "/**/*entity{.ts,.js}"],
                 synchronize: true,
             }),
         ],

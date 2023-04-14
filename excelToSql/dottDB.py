@@ -6,7 +6,7 @@ direccionDatosUnificados = "/home/do0t/Documents/ChatGPT/Dott-API/excelToSql/dat
 direccionAchivosJson = {
     "jsonDatos": "/home/do0t/Documents/ChatGPT/Dott-API/excelToSql/data.json",
     "jsonDolar": "/home/do0t/Documents/ChatGPT/Dott-API/excelToSql/dataDolar.json",
-    "direccionDB":"/home/do0t/Documents/ChatGPT/Dott-API/excelToSql/productosDB"
+    "direccionDB":"/home/do0t/Documents/ChatGPT/Dott-API/excelToSql/productosDB.sqlite"
 }
 
 # Lectura de datos desde el archivo Excel usando pandas
@@ -22,9 +22,6 @@ jsonFIle = open(direccionAchivosJson['jsonDolar'], "w")
 jsonFIle.write(datosDolar.to_json(orient='records'))
 jsonFIle.close()
 
-# Nombre del archivo JSON
-# archivo_json = './data.json'
-# archivo_json_dolar = './dataDolar.json'
 
 # Nombre de la tabla en la base de datos SQLite
 nombre_tabla = 'Productos'
