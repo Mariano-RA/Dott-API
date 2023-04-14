@@ -2,29 +2,36 @@ import json
 import pandas as pd
 import sqlite3
 
+direccionDatosUnificados = "/home/do0t/Documents/ChatGPT/Dott-API/excelToSql/datos.xlsx"
+direccionAchivosJson = {
+    "jsonDatos": "/home/do0t/Documents/ChatGPT/Dott-API/excelToSql/data.json",
+    "jsonDolar": "/home/do0t/Documents/ChatGPT/Dott-API/excelToSql/dataDolar.json",
+    "direccionDB":"/home/do0t/Documents/ChatGPT/Dott-API/excelToSql/productosDB"
+}
+
 # Lectura de datos desde el archivo Excel usando pandas
-datos = pd.read_excel("/home/do0t/Documents/ChatGPT/ExcelToSQL/datos.xlsx", sheet_name="Productos")
-datosDolar  = pd.read_excel("/home/do0t/Documents/ChatGPT/ExcelToSQL/datos.xlsx", sheet_name="Dolares")
+datos = pd.read_excel(direccionDatosUnificados, sheet_name="Productos")
+datosDolar  = pd.read_excel(direccionDatosUnificados, sheet_name="Dolares")
 
 #Creo el archivo JSON y cargo los datos del excel
-jsonFIle = open("/home/do0t/Documents/ChatGPT/ExcelToSQL/data.json", "w")
+jsonFIle = open(direccionAchivosJson['jsonDatos'], "w")
 jsonFIle.write(datos.to_json(orient='records'))
 jsonFIle.close()
 
-jsonFIle = open("/home/do0t/Documents/ChatGPT/ExcelToSQL/dataDolar.json", "w")
+jsonFIle = open(direccionAchivosJson['jsonDolar'], "w")
 jsonFIle.write(datosDolar.to_json(orient='records'))
 jsonFIle.close()
 
 # Nombre del archivo JSON
-archivo_json = '/home/do0t/Documents/ChatGPT/ExcelToSQL/data.json'
-archivo_json_dolar = '/home/do0t/Documents/ChatGPT/ExcelToSQL/dataDolar.json'
+# archivo_json = './data.json'
+# archivo_json_dolar = './dataDolar.json'
 
 # Nombre de la tabla en la base de datos SQLite
 nombre_tabla = 'Productos'
 nombre_tabla_2 = 'Dolares'
 
 # Conexión a la base de datos SQLite
-conexion = sqlite3.connect('/home/do0t/Documents/ChatGPT/ExcelToSQL/productosDB')
+conexion = sqlite3.connect(direccionAchivosJson['direccionDB'])
 
 # Creación de la tabla en la base de datos SQLite
 cursor = conexion.cursor()
@@ -35,10 +42,10 @@ cursor.execute(f'CREATE TABLE {nombre_tabla_2} (id integer PRIMARY KEY AUTOINCRE
 
 
 # Lectura del archivo JSON
-with open(archivo_json) as f:
+with open(direccionAchivosJson['jsonDatos']) as f:
     datos = json.load(f)
 
-with open(archivo_json_dolar) as g:
+with open(direccionAchivosJson['jsonDolar']) as g:
     datos_dolar = json.load(g)
 
 # Almacenamiento de los datos en la base de datos SQLite
