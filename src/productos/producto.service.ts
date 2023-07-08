@@ -29,12 +29,15 @@ export class ProductosService {
         ) / 100;
       dto.precioTarjeta =
         Math.round(
-          (prod.precio as number) * (valorDolar.precioTarjeta as number) * (valorDolar.precioDolar as number) * 100
+          (prod.precio as number) *
+            (valorDolar.precioTarjeta as number) *
+            (valorDolar.precioDolar as number) *
+            100
         ) / 100;
       dto.Cuota = Math.round(((dto.precioTarjeta as number) / 12) * 100) / 100;
       listadoProductos.push(dto);
     });
-    return listadoProductos;
+    return listadoProductos.sort((x) => x.precioDolar);
   }
 
   async findByKeyWord(keywords: String[]) {
@@ -62,13 +65,16 @@ export class ProductosService {
           ) / 100;
         dto.precioTarjeta =
           Math.round(
-            (prod.precio as number) * (valorDolar.precioTarjeta as number) * (valorDolar.precioDolar as number) * 100
+            (prod.precio as number) *
+              (valorDolar.precioTarjeta as number) *
+              (valorDolar.precioDolar as number) *
+              100
           ) / 100;
         dto.Cuota =
           Math.round(((dto.precioTarjeta as number) / 12) * 100) / 100;
         listadoProductos.push(dto);
       });
-    return listadoProductos;
+    return listadoProductos.sort((x) => x.precioDolar);
   }
 
   async findByCategory(category: string) {
@@ -88,16 +94,19 @@ export class ProductosService {
           ) / 100;
         dto.precioTarjeta =
           Math.round(
-            (prod.precio as number) * (valorDolar.precioTarjeta as number) * (valorDolar.precioDolar as number) * 100
+            (prod.precio as number) *
+              (valorDolar.precioTarjeta as number) *
+              (valorDolar.precioDolar as number) *
+              100
           ) / 100;
         dto.Cuota =
           Math.round(((dto.precioTarjeta as number) / 12) * 100) / 100;
         listadoProductos.push(dto);
       });
-    return listadoProductos;
+    return listadoProductos.sort((x) => x.precioDolar);
   }
 
-  async findByKeyWordAndCategory(keywords: String[], category: string){
+  async findByKeyWordAndCategory(keywords: String[], category: string) {
     const productos = await this.productoRepository.find();
     const valorDolar = await this.dolaresService.obtenerUltimo();
     const listadoProductos = [];
@@ -123,12 +132,15 @@ export class ProductosService {
           ) / 100;
         dto.precioTarjeta =
           Math.round(
-            (prod.precio as number) * (valorDolar.precioTarjeta as number) * (valorDolar.precioDolar as number) * 100
+            (prod.precio as number) *
+              (valorDolar.precioTarjeta as number) *
+              (valorDolar.precioDolar as number) *
+              100
           ) / 100;
         dto.Cuota =
           Math.round(((dto.precioTarjeta as number) / 12) * 100) / 100;
         listadoProductos.push(dto);
       });
-    return listadoProductos;
+    return listadoProductos.sort((x) => x.precioDolar);
   }
 }
