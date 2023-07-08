@@ -37,7 +37,7 @@ export class ProductosService {
       dto.Cuota = Math.round(((dto.precioTarjeta as number) / 12) * 100) / 100;
       listadoProductos.push(dto);
     });
-    return listadoProductos.sort((x) => x.precioDolar);
+    return listadoProductos.sort((x) => x.precioEfectivo);
   }
 
   async findByKeyWord(keywords: String[]) {
@@ -74,7 +74,7 @@ export class ProductosService {
           Math.round(((dto.precioTarjeta as number) / 12) * 100) / 100;
         listadoProductos.push(dto);
       });
-    return listadoProductos.sort((x) => x.precioDolar);
+    return listadoProductos.sort((x) => x.precioEfectivo);
   }
 
   async findByCategory(category: string) {
@@ -103,7 +103,7 @@ export class ProductosService {
           Math.round(((dto.precioTarjeta as number) / 12) * 100) / 100;
         listadoProductos.push(dto);
       });
-    return listadoProductos.sort((x) => x.precioDolar);
+    return listadoProductos.sort((x) => x.precioEfectivo);
   }
 
   async findByKeyWordAndCategory(keywords: String[], category: string) {
@@ -141,6 +141,6 @@ export class ProductosService {
           Math.round(((dto.precioTarjeta as number) / 12) * 100) / 100;
         listadoProductos.push(dto);
       });
-    return listadoProductos.sort((x) => x.precioDolar);
+    return listadoProductos.sort((x) => x.precioEfectivo);
   }
 }
