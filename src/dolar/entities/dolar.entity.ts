@@ -1,13 +1,13 @@
-import { Entity, Column, PrimaryColumn, Double } from 'typeorm';
+import { Entity, Column, PrimaryColumn, Double } from "typeorm";
 
-@Entity('Dolares')
+@Entity("Dolar")
 export class Dolar {
-  @PrimaryColumn('int')
+  @PrimaryColumn("int")
   id: number;
 
-  @Column('float')
-  precioDolar: Double;
+  @Column("float")
+  precioDolar: number;
 
-  @Column('float')
-  precioTarjeta: Double;
+  @Column("float")
+  precioTarjeta: number;
 }

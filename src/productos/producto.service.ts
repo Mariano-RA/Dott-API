@@ -1,10 +1,21 @@
-/* eslint-disable prettier/prettier */
 import { Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DolaresService } from "src/dolar/dolar.service";
 import { Repository } from "typeorm";
 import { ProductoDto } from "./dto/productoDto";
 import { Producto } from "./entities/producto.entity";
+
+function obtenerPrecioEfectivo(monto, dolar) {
+  return Math.round(monto * dolar);
+}
+
+function obtenerPrecioTarjeta(monto, interes, dolar) {
+  return Math.round(monto * interes * dolar);
+}
+
+function obtenerValorCuota(monto, cantidadCuotas) {
+  return Math.round(monto / cantidadCuotas);
+}
 
 @Injectable()
 export class ProductosService {
@@ -18,63 +29,54 @@ export class ProductosService {
     const productos = await this.productoRepository.find();
     const valorDolar = await this.dolaresService.obtenerUltimo();
     const listadoProductos = [];
-    productos.forEach((prod) => {
+    productos.map((prod) => {
       const dto = new ProductoDto();
       dto.proveedor = prod.proveedor;
       dto.producto = prod.producto;
       dto.categoria = prod.categoria;
-      dto.precioEfectivo =
-        Math.round(
-          (prod.precio as number) * (valorDolar.precioDolar as number) * 100
-        ) / 100;
-      dto.precioTarjeta =
-        Math.round(
-          (prod.precio as number) *
-            (valorDolar.precioTarjeta as number) *
-            (valorDolar.precioDolar as number) *
-            100
-        ) / 100;
-      dto.Cuota = Math.round(((dto.precioTarjeta as number) / 12) * 100) / 100;
+      dto.precioEfectivo = obtenerPrecioEfectivo(
+        prod.precio,
+        valorDolar.precioDolar
+      );
+      dto.precioTarjeta = obtenerPrecioTarjeta(
+        prod.precio,
+        valorDolar.precioTarjeta,
+        valorDolar.precioDolar
+      );
+      dto.Cuota = obtenerValorCuota(dto.precioTarjeta, 12);
       listadoProductos.push(dto);
     });
-    return listadoProductos.sort((x) => x.precioEfectivo);
+    return listadoProductos.sort((a, b) => a.precioEfectivo - b.precioEfectivo);
   }
 
   async findByKeyWord(keywords: String[]) {
     const productos = await this.productoRepository.find();
     const listadoProductos = [];
     const valorDolar = await this.dolaresService.obtenerUltimo();
-    const palabra1 = keywords[0] != null ? keywords[0] : "";
-    const palabra2 = keywords[1] != null ? keywords[1] : "";
-    const palabra3 = keywords[2] != null ? keywords[2] : "";
     productos
-      .filter(
-        (x) =>
-          x.producto.toLowerCase().includes(palabra1.toLowerCase()) &&
-          x.producto.toLowerCase().includes(palabra2.toLowerCase()) &&
-          x.producto.toLowerCase().includes(palabra3.toLowerCase())
+      .filter((x) =>
+        keywords.every((word) =>
+          x.producto.toLowerCase().includes(word.toLowerCase())
+        )
       )
-      .forEach((prod) => {
+      .map((prod) => {
         const dto = new ProductoDto();
         dto.proveedor = prod.proveedor;
         dto.producto = prod.producto;
         dto.categoria = prod.categoria;
-        dto.precioEfectivo =
-          Math.round(
-            (prod.precio as number) * (valorDolar.precioDolar as number) * 100
-          ) / 100;
-        dto.precioTarjeta =
-          Math.round(
-            (prod.precio as number) *
-              (valorDolar.precioTarjeta as number) *
-              (valorDolar.precioDolar as number) *
-              100
-          ) / 100;
-        dto.Cuota =
-          Math.round(((dto.precioTarjeta as number) / 12) * 100) / 100;
+        dto.precioEfectivo = obtenerPrecioEfectivo(
+          prod.precio,
+          valorDolar.precioDolar
+        );
+        dto.precioTarjeta = obtenerPrecioTarjeta(
+          prod.precio,
+          valorDolar.precioTarjeta,
+          valorDolar.precioDolar
+        );
+        dto.Cuota = obtenerValorCuota(dto.precioTarjeta, 12);
         listadoProductos.push(dto);
       });
-    return listadoProductos.sort((x) => x.precioEfectivo);
+    return listadoProductos.sort((a, b) => a.precioEfectivo - b.precioEfectivo);
   }
 
   async findByCategory(category: string) {
@@ -83,24 +85,21 @@ export class ProductosService {
     const listadoProductos = [];
     productos
       .filter((x) => x.categoria.toLowerCase().includes(category.toLowerCase()))
-      .forEach((prod) => {
+      .map((prod) => {
         const dto = new ProductoDto();
         dto.proveedor = prod.proveedor;
         dto.producto = prod.producto;
         dto.categoria = prod.categoria;
-        dto.precioEfectivo =
-          Math.round(
-            (prod.precio as number) * (valorDolar.precioDolar as number) * 100
-          ) / 100;
-        dto.precioTarjeta =
-          Math.round(
-            (prod.precio as number) *
-              (valorDolar.precioTarjeta as number) *
-              (valorDolar.precioDolar as number) *
-              100
-          ) / 100;
-        dto.Cuota =
-          Math.round(((dto.precioTarjeta as number) / 12) * 100) / 100;
+        dto.precioEfectivo = obtenerPrecioEfectivo(
+          prod.precio,
+          valorDolar.precioDolar
+        );
+        dto.precioTarjeta = obtenerPrecioTarjeta(
+          prod.precio,
+          valorDolar.precioTarjeta,
+          valorDolar.precioDolar
+        );
+        dto.Cuota = obtenerValorCuota(dto.precioTarjeta, 12);
         listadoProductos.push(dto);
       });
     return listadoProductos.sort((x) => x.precioEfectivo);
@@ -110,37 +109,30 @@ export class ProductosService {
     const productos = await this.productoRepository.find();
     const valorDolar = await this.dolaresService.obtenerUltimo();
     const listadoProductos = [];
-    const palabra1 = keywords[0] != null ? keywords[0] : "";
-    const palabra2 = keywords[1] != null ? keywords[1] : "";
-    const palabra3 = keywords[2] != null ? keywords[2] : "";
     productos
       .filter(
         (x) =>
-          x.producto.toLowerCase().includes(palabra1.toLowerCase()) &&
-          x.producto.toLowerCase().includes(palabra2.toLowerCase()) &&
-          x.producto.toLowerCase().includes(palabra3.toLowerCase()) &&
-          x.categoria.toLowerCase().includes(category.toLowerCase())
+          keywords.every((word) =>
+            x.producto.toLowerCase().includes(word.toLowerCase())
+          ) && x.categoria.toLowerCase().includes(category.toLowerCase())
       )
-      .forEach((prod) => {
+      .map((prod) => {
         const dto = new ProductoDto();
         dto.proveedor = prod.proveedor;
         dto.producto = prod.producto;
         dto.categoria = prod.categoria;
-        dto.precioEfectivo =
-          Math.round(
-            (prod.precio as number) * (valorDolar.precioDolar as number) * 100
-          ) / 100;
-        dto.precioTarjeta =
-          Math.round(
-            (prod.precio as number) *
-              (valorDolar.precioTarjeta as number) *
-              (valorDolar.precioDolar as number) *
-              100
-          ) / 100;
-        dto.Cuota =
-          Math.round(((dto.precioTarjeta as number) / 12) * 100) / 100;
+        dto.precioEfectivo = obtenerPrecioEfectivo(
+          prod.precio,
+          valorDolar.precioDolar
+        );
+        dto.precioTarjeta = obtenerPrecioTarjeta(
+          prod.precio,
+          valorDolar.precioTarjeta,
+          valorDolar.precioDolar
+        );
+        dto.Cuota = obtenerValorCuota(dto.precioTarjeta, 12);
         listadoProductos.push(dto);
       });
-    return listadoProductos.sort((x) => x.precioEfectivo);
+    return listadoProductos.sort((a, b) => a.precioEfectivo - b.precioEfectivo);
   }
 }

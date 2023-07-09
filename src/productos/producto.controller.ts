@@ -1,14 +1,14 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Get, Inject, ParseArrayPipe, Query } from "@nestjs/common";
+import { Controller, Get, ParseArrayPipe, Query } from "@nestjs/common";
 import { ProductosService } from "./producto.service";
+import { IsNull } from "typeorm";
 
 @Controller("productos")
 export class ProductosController {
-  constructor(private readonly productosService: ProductosService,
-    ) {}
+  constructor(private readonly productosService: ProductosService) {}
 
   @Get()
-   async findAll() {
+  async findAll() {
     return this.productosService.findAll();
   }
 
@@ -30,8 +30,7 @@ export class ProductosController {
     @Query("category") category: string,
     @Query("keywords", new ParseArrayPipe({ items: String, separator: "," }))
     keywords: String[]
-    ) 
-    {
+  ) {
     return this.productosService.findByKeyWordAndCategory(keywords, category);
   }
 }

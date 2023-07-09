@@ -1,25 +1,19 @@
-import { Entity, Column, PrimaryColumn, Double } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity('Productos')
+@Entity("Productos")
 export class Producto {
-  @PrimaryColumn('int')
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('text', { nullable: true })
+  @Column("text")
   proveedor: string;
 
-  @Column('text', { nullable: true })
+  @Column("text")
   producto: string;
 
-  @Column('text')
+  @Column("text")
   categoria: string;
 
-  @Column('float', { nullable: true })
-  precio: Double;
-
-  @Column('float', { nullable: true })
-  precioEfectivo: Double;
-
-  @Column('float', { nullable: true })
-  precioTarjeta: Double;
+  @Column("float")
+  precio: number;
 }

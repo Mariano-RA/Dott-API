@@ -1,9 +1,7 @@
-import { Double } from 'typeorm';
+import { Double } from "typeorm";
 
 export class DolarDto {
+  precioDolar: number;
 
-  precioDolar: Double;
-
-  precioTarjeta: Double;
-
+  precioTarjeta: number;
 }
