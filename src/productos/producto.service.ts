@@ -115,7 +115,7 @@ export class ProductosService {
         dto.Cuota = obtenerValorCuota(dto.precioTarjeta, 12);
         listadoProductos.push(dto);
       });
-    return listadoProductos.sort((x) => x.precioEfectivo);
+    return listadoProductos.sort((a, b) => a.precioEfectivo - b.precioEfectivo);
   }
 
   async findByKeyWordAndCategory(keywords: String[], category: string) {
