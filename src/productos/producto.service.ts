@@ -49,6 +49,19 @@ export class ProductosService {
     return listadoProductos.sort((a, b) => a.precioEfectivo - b.precioEfectivo);
   }
 
+  async findAllCategories() {
+    const productos = await this.productoRepository.find();
+    const categoriasSet = new Set();
+
+    productos.forEach((prod) => {
+      categoriasSet.add(prod.categoria);
+    });
+
+    const categorias = Array.from(categoriasSet); // Convertir el conjunto a un array
+
+    return categorias.sort();
+  }
+
   async findByKeyWord(keywords: String[]) {
     const productos = await this.productoRepository.find();
     const listadoProductos = [];

@@ -8,8 +8,13 @@ export class ProductosController {
   constructor(private readonly productosService: ProductosService) {}
 
   @Get()
-  async findAll() {
+  findAll() {
     return this.productosService.findAll();
+  }
+
+  @Get("categorias/")
+  findAllCategories() {
+    return this.productosService.findAllCategories();
   }
 
   @Get("/buscarPorPalabrasClaves/")
