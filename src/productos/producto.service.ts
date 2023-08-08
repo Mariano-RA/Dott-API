@@ -4,30 +4,45 @@ import { DolaresService } from "src/dolar/dolar.service";
 import { Repository } from "typeorm";
 import { ProductoDto } from "./dto/productoDto";
 import { Producto } from "./entities/producto.entity";
+import { CuotasService } from "src/cuota/cuota.service";
+import { valorCuotaDto } from "./dto/valorCuotaDto";
 
 function obtenerPrecioEfectivo(monto, dolar) {
   return Math.round(monto * dolar);
 }
 
-function obtenerPrecioTarjeta(monto, interes, dolar) {
-  return Math.round(monto * interes * dolar);
+function calcularValorCuotas(precio, listadoCuotas) {
+  let listado = new Array();
+  listadoCuotas.map((cuota) => {
+    let valorCuota = new valorCuotaDto();
+    valorCuota.CantidadCuotas = cuota.id;
+    valorCuota.Total = Math.round(precio / cuota.valorTarjeta);
+    valorCuota.Cuota = Math.round(precio / cuota.valorTarjeta / cuota.id);
+    listado.push(valorCuota);
+  });
+  return listado;
 }
 
-function obtenerValorCuota(monto, cantidadCuotas) {
-  return Math.round(monto / cantidadCuotas);
+function pagination(skip, take, items) {
+  let indiceInicio = (skip - 1) * take;
+  let indiceFin = indiceInicio + take;
+  return items.slice(indiceInicio, indiceFin);
 }
 
 @Injectable()
 export class ProductosService {
   @Inject(DolaresService) private readonly dolaresService: DolaresService;
+  @Inject(CuotasService) private readonly cuotasService: CuotasService;
   constructor(
     @InjectRepository(Producto)
     private readonly productoRepository: Repository<Producto>
   ) {}
 
-  async findAll() {
+  async findAll(skip: number, take: number) {
     const productos = await this.productoRepository.find();
     const valorDolar = await this.dolaresService.obtenerUltimo();
+    const listadoCuotas = await this.cuotasService.obtenerValorCuotas();
+
     const listadoProductos = [];
     productos.map((prod) => {
       const dto = new ProductoDto();
@@ -38,15 +53,11 @@ export class ProductosService {
         prod.precio,
         valorDolar.precioDolar
       );
-      dto.precioTarjeta = obtenerPrecioTarjeta(
-        prod.precio,
-        valorDolar.precioTarjeta,
-        valorDolar.precioDolar
-      );
-      dto.Cuota = obtenerValorCuota(dto.precioTarjeta, 12);
+      dto.precioCuotas = calcularValorCuotas(dto.precioEfectivo, listadoCuotas);
       listadoProductos.push(dto);
     });
-    return listadoProductos.sort((a, b) => a.precioEfectivo - b.precioEfectivo);
+    listadoProductos.sort((a, b) => a.precioEfectivo - b.precioEfectivo);
+    return pagination(skip, take, listadoProductos);
   }
 
   async findAllCategories() {
@@ -64,8 +75,10 @@ export class ProductosService {
 
   async findByKeyWord(keywords: String[]) {
     const productos = await this.productoRepository.find();
-    const listadoProductos = [];
     const valorDolar = await this.dolaresService.obtenerUltimo();
+    const listadoCuotas = await this.cuotasService.obtenerValorCuotas();
+
+    const listadoProductos = [];
     productos
       .filter((x) =>
         keywords.every((word) =>
@@ -81,20 +94,19 @@ export class ProductosService {
           prod.precio,
           valorDolar.precioDolar
         );
-        dto.precioTarjeta = obtenerPrecioTarjeta(
-          prod.precio,
-          valorDolar.precioTarjeta,
-          valorDolar.precioDolar
+        dto.precioCuotas = calcularValorCuotas(
+          dto.precioEfectivo,
+          listadoCuotas
         );
-        dto.Cuota = obtenerValorCuota(dto.precioTarjeta, 12);
         listadoProductos.push(dto);
       });
     return listadoProductos.sort((a, b) => a.precioEfectivo - b.precioEfectivo);
   }
 
-  async findByCategory(category: string) {
+  async findByCategory(category: string, skip: number, take: number) {
     const productos = await this.productoRepository.find();
     const valorDolar = await this.dolaresService.obtenerUltimo();
+    const listadoCuotas = await this.cuotasService.obtenerValorCuotas();
     const listadoProductos = [];
     productos
       .filter((x) => x.categoria.toLowerCase().includes(category.toLowerCase()))
@@ -107,20 +119,25 @@ export class ProductosService {
           prod.precio,
           valorDolar.precioDolar
         );
-        dto.precioTarjeta = obtenerPrecioTarjeta(
-          prod.precio,
-          valorDolar.precioTarjeta,
-          valorDolar.precioDolar
+        dto.precioCuotas = calcularValorCuotas(
+          dto.precioEfectivo,
+          listadoCuotas
         );
-        dto.Cuota = obtenerValorCuota(dto.precioTarjeta, 12);
         listadoProductos.push(dto);
       });
-    return listadoProductos.sort((a, b) => a.precioEfectivo - b.precioEfectivo);
+    listadoProductos.sort((a, b) => a.precioEfectivo - b.precioEfectivo);
+    return pagination(skip, take, listadoProductos);
   }
 
-  async findByKeyWordAndCategory(keywords: String[], category: string) {
+  async findByKeyWordAndCategory(
+    keywords: String[],
+    category: string,
+    skip: number,
+    take: number
+  ) {
     const productos = await this.productoRepository.find();
     const valorDolar = await this.dolaresService.obtenerUltimo();
+    const listadoCuotas = await this.cuotasService.obtenerValorCuotas();
     const listadoProductos = [];
     productos
       .filter(
@@ -138,14 +155,13 @@ export class ProductosService {
           prod.precio,
           valorDolar.precioDolar
         );
-        dto.precioTarjeta = obtenerPrecioTarjeta(
-          prod.precio,
-          valorDolar.precioTarjeta,
-          valorDolar.precioDolar
+        dto.precioCuotas = calcularValorCuotas(
+          dto.precioEfectivo,
+          listadoCuotas
         );
-        dto.Cuota = obtenerValorCuota(dto.precioTarjeta, 12);
         listadoProductos.push(dto);
       });
-    return listadoProductos.sort((a, b) => a.precioEfectivo - b.precioEfectivo);
+    listadoProductos.sort((a, b) => a.precioEfectivo - b.precioEfectivo);
+    return pagination(skip, take, listadoProductos);
   }
 }

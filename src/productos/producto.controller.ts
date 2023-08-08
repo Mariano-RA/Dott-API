@@ -8,8 +8,8 @@ export class ProductosController {
   constructor(private readonly productosService: ProductosService) {}
 
   @Get()
-  findAll() {
-    return this.productosService.findAll();
+  findAll(@Query("skip") skip: number, @Query("take") take: number) {
+    return this.productosService.findAll(skip, take);
   }
 
   @Get("categorias/")
@@ -26,16 +26,27 @@ export class ProductosController {
   }
 
   @Get("categoria/")
-  findByCategory(@Query("category") category: string) {
-    return this.productosService.findByCategory(category);
+  findByCategory(
+    @Query("category") category: string,
+    @Query("skip") skip: number,
+    @Query("take") take: number
+  ) {
+    return this.productosService.findByCategory(category, skip, take);
   }
 
   @Get("palabrasClavesYCategoria/")
   findByKeyWordAndCategory(
     @Query("category") category: string,
     @Query("keywords", new ParseArrayPipe({ items: String, separator: "," }))
-    keywords: String[]
+    keywords: String[],
+    @Query("skip") skip: number,
+    @Query("take") take: number
   ) {
-    return this.productosService.findByKeyWordAndCategory(keywords, category);
+    return this.productosService.findByKeyWordAndCategory(
+      keywords,
+      category,
+      skip,
+      take
+    );
   }
 }

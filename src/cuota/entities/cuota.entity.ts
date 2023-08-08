@@ -1,10 +1,10 @@
 import { Entity, Column, PrimaryColumn, Double } from "typeorm";
 
-@Entity("Dolar")
-export class Dolar {
+@Entity("Cuota")
+export class Cuota {
   @PrimaryColumn("int")
   id: number;
 
   @Column("float")
-  precioDolar: number;
+  valorTarjeta: number;
 }

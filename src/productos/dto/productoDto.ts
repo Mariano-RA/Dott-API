@@ -1,4 +1,5 @@
-import { Double } from 'typeorm';
+import { Double } from "typeorm";
+import { valorCuotaDto } from "./valorCuotaDto";
 
 export class ProductoDto {
   proveedor: string;
@@ -9,7 +10,5 @@ export class ProductoDto {
 
   precioEfectivo: Double;
 
-  precioTarjeta: Double;
-
-  Cuota: Double;
+  precioCuotas: valorCuotaDto[];
 }
