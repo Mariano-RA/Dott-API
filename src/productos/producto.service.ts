@@ -24,9 +24,7 @@ function calcularValorCuotas(precio, listadoCuotas) {
 }
 
 function pagination(skip, take, items) {
-  let indiceInicio = (skip - 1) * take;
-  let indiceFin = indiceInicio + take;
-  return items.slice(indiceInicio, indiceFin);
+  return items.slice((skip - 1) * take, skip * take);
 }
 
 @Injectable()
