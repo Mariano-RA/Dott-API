@@ -13,12 +13,15 @@ export class DolaresService {
   ) {}
 
   async obtenerUltimo() {
-    const resDolar = await this.dolarRepository.query(
-      "select id, precioDolar from Dolares order by id desc LIMIT 1"
-    );
+    const resDolar = await this.dolarRepository
+      .createQueryBuilder()
+      .select()
+      .orderBy("id", "DESC")
+      .getOne();
+
     const dolarFinal = new Dolar();
-    dolarFinal.id = resDolar[0].id;
-    dolarFinal.precioDolar = resDolar[0].precioDolar;
+    dolarFinal.id = resDolar.id;
+    dolarFinal.precioDolar = resDolar.precioDolar;
     return dolarFinal;
   }
 

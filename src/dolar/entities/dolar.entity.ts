@@ -1,8 +1,14 @@
-import { Entity, Column, PrimaryColumn, Double } from "typeorm";
+import {
+  Entity,
+  Column,
+  PrimaryColumn,
+  Double,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 
 @Entity("Dolar")
 export class Dolar {
-  @PrimaryColumn("int")
+  @PrimaryGeneratedColumn()
   id: number;
 
   @Column("float")
