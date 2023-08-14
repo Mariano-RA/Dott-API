@@ -27,6 +27,33 @@ function pagination(skip, take, items) {
   return items.slice((skip - 1) * take, skip * take);
 }
 
+function handleOrder(action, array) {
+  switch (action) {
+    case "mayor":
+      array.slice().sort((a, b) => b.precioEfectivo - a.precioEfectivo);
+      break;
+    case "menor":
+      array.slice().sort((a, b) => a.precioEfectivo - b.precioEfectivo);
+      break;
+    case "nombreAsc":
+      array
+        .slice()
+        .sort((a, b) =>
+          a.producto.toLowerCase().localeCompare(b.producto.toLowerCase())
+        );
+    case "nombreDesc":
+      array
+        .slice()
+        .sort((a, b) =>
+          b.producto.toLowerCase().localeCompare(a.producto.toLowerCase())
+        );
+      break;
+    default:
+      break;
+  }
+  return array;
+}
+
 @Injectable()
 export class ProductosService {
   @Inject(DolaresService) private readonly dolaresService: DolaresService;
@@ -36,13 +63,14 @@ export class ProductosService {
     private readonly productoRepository: Repository<Producto>
   ) {}
 
-  async findAll(skip: number, take: number) {
+  async findAll(skip: number, take: number, orderBy: string) {
     const productos = await this.productoRepository.find();
     const valorDolar = await this.dolaresService.obtenerUltimo();
     const listadoCuotas = await this.cuotasService.obtenerValorCuotas();
 
     const listadoProductos = [];
-    productos.map((prod) => {
+    let productosSorted = handleOrder(orderBy, productos);
+    productosSorted.map((prod) => {
       const dto = new ProductoDto();
       dto.id = prod.id;
       dto.proveedor = prod.proveedor;
@@ -103,12 +131,18 @@ export class ProductosService {
     return listadoProductos.sort((a, b) => a.precioEfectivo - b.precioEfectivo);
   }
 
-  async findByCategory(category: string, skip: number, take: number) {
+  async findByCategory(
+    category: string,
+    skip: number,
+    take: number,
+    orderBy: string
+  ) {
     const productos = await this.productoRepository.find();
     const valorDolar = await this.dolaresService.obtenerUltimo();
     const listadoCuotas = await this.cuotasService.obtenerValorCuotas();
     const listadoProductos = [];
-    productos
+    let productosSorted = handleOrder(orderBy, productos);
+    productosSorted
       .filter((x) => x.categoria.toLowerCase().includes(category.toLowerCase()))
       .map((prod) => {
         const dto = new ProductoDto();
@@ -134,13 +168,15 @@ export class ProductosService {
     keywords: String[],
     category: string,
     skip: number,
-    take: number
+    take: number,
+    orderBy: string
   ) {
     const productos = await this.productoRepository.find();
     const valorDolar = await this.dolaresService.obtenerUltimo();
     const listadoCuotas = await this.cuotasService.obtenerValorCuotas();
     const listadoProductos = [];
-    productos
+    let productosSorted = handleOrder(orderBy, productos);
+    productosSorted
       .filter(
         (x) =>
           keywords.every((word) =>

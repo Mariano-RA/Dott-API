@@ -8,8 +8,12 @@ export class ProductosController {
   constructor(private readonly productosService: ProductosService) {}
 
   @Get()
-  findAll(@Query("skip") skip: number, @Query("take") take: number) {
-    return this.productosService.findAll(skip, take);
+  findAll(
+    @Query("skip") skip: number,
+    @Query("take") take: number,
+    @Query("orderBy") orderBy: string
+  ) {
+    return this.productosService.findAll(skip, take, orderBy);
   }
 
   @Get("categorias/")
@@ -29,9 +33,10 @@ export class ProductosController {
   findByCategory(
     @Query("category") category: string,
     @Query("skip") skip: number,
-    @Query("take") take: number
+    @Query("take") take: number,
+    @Query("orderBy") orderBy: string
   ) {
-    return this.productosService.findByCategory(category, skip, take);
+    return this.productosService.findByCategory(category, skip, take, orderBy);
   }
 
   @Get("palabrasClavesYCategoria/")
@@ -40,13 +45,15 @@ export class ProductosController {
     @Query("keywords", new ParseArrayPipe({ items: String, separator: "," }))
     keywords: String[],
     @Query("skip") skip: number,
-    @Query("take") take: number
+    @Query("take") take: number,
+    @Query("orderBy") orderBy: string
   ) {
     return this.productosService.findByKeyWordAndCategory(
       keywords,
       category,
       skip,
-      take
+      take,
+      orderBy
     );
   }
 }
