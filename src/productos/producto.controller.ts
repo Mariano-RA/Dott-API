@@ -27,7 +27,7 @@ export class ProductosController {
     keywords: String[],
     @Query("orderBy") orderBy: string
   ) {
-    return this.productosService.findByKeyWord(keywords);
+    return this.productosService.findByKeyWord(keywords, orderBy);
   }
 
   @Get("categoria/")
