@@ -97,7 +97,7 @@ export class ProductosService {
     return categorias.sort();
   }
 
-  async findByKeyWord(keywords: String[]) {
+  async findByKeyWord(keywords: String[], orderBy: string) {
     const [productos, valorDolar, listadoCuotas] = await Promise.all([
       this.productoRepository.find(),
       this.dolaresService.obtenerUltimo(),
@@ -105,7 +105,8 @@ export class ProductosService {
     ]);
 
     const listadoProductos = [];
-    productos
+    let productosSorted = handleOrder(orderBy, productos);
+    productosSorted
       .filter((x) =>
         keywords.every((word) =>
           x.producto.toLowerCase().includes(word.toLowerCase())

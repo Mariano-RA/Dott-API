@@ -24,7 +24,8 @@ export class ProductosController {
   @Get("/buscarPorPalabrasClaves/")
   findByKeyWord(
     @Query("keywords", new ParseArrayPipe({ items: String, separator: "," }))
-    keywords: String[]
+    keywords: String[],
+    @Query("orderBy") orderBy: string
   ) {
     return this.productosService.findByKeyWord(keywords);
   }
