@@ -83,7 +83,6 @@ export class ProductosService {
       dto.precioCuotas = calcularValorCuotas(dto.precioEfectivo, listadoCuotas);
       listadoProductos.push(dto);
     });
-    listadoProductos.sort((a, b) => a.precioEfectivo - b.precioEfectivo);
     return pagination(skip, take, listadoProductos);
   }
 
@@ -160,7 +159,7 @@ export class ProductosService {
         );
         listadoProductos.push(dto);
       });
-    listadoProductos.sort((a, b) => a.precioEfectivo - b.precioEfectivo);
+
     return pagination(skip, take, listadoProductos);
   }
 
@@ -199,7 +198,7 @@ export class ProductosService {
         );
         listadoProductos.push(dto);
       });
-    listadoProductos.sort((a, b) => a.precioEfectivo - b.precioEfectivo);
+
     return pagination(skip, take, listadoProductos);
   }
 }
