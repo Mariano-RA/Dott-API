@@ -12,12 +12,13 @@ function obtenerPrecioEfectivo(monto, dolar) {
 }
 
 function calcularValorCuotas(precio, listadoCuotas) {
-  let listado = new Array();
-  listadoCuotas.map((cuota) => {
-    let valorCuota = new valorCuotaDto();
-    valorCuota.CantidadCuotas = cuota.id;
-    valorCuota.Total = Math.round(precio / cuota.valorTarjeta);
-    valorCuota.Cuota = Math.round(precio / cuota.valorTarjeta / cuota.id);
+  let listado = [];
+  listadoCuotas.forEach((cuota) => {
+    const { id, valorTarjeta } = cuota;
+    const valorCuota = new valorCuotaDto();
+    valorCuota.CantidadCuotas = id;
+    valorCuota.Total = Math.round(precio / valorTarjeta);
+    valorCuota.Cuota = Math.round(precio / valorTarjeta / id);
     listado.push(valorCuota);
   });
   return listado;
@@ -28,30 +29,24 @@ function pagination(skip, take, items) {
 }
 
 function handleOrder(action, array) {
-  switch (action) {
-    case "mayor":
-      array.slice().sort((a, b) => b.precioEfectivo - a.precioEfectivo);
-      break;
-    case "menor":
-      array.slice().sort((a, b) => a.precioEfectivo - b.precioEfectivo);
-      break;
-    case "nombreAsc":
-      array
-        .slice()
-        .sort((a, b) =>
-          a.producto.toLowerCase().localeCompare(b.producto.toLowerCase())
-        );
-    case "nombreDesc":
-      array
-        .slice()
-        .sort((a, b) =>
-          b.producto.toLowerCase().localeCompare(a.producto.toLowerCase())
-        );
-      break;
-    default:
-      break;
+  const sortedArray = [...array];
+
+  const sortingActions = {
+    mayor: (a, b) => b.precio - a.precio,
+    menor: (a, b) => a.precio - b.precio,
+    nombreAsc: (a, b) =>
+      a.producto.toLowerCase().localeCompare(b.producto.toLowerCase()),
+    nombreDesc: (a, b) =>
+      b.producto.toLowerCase().localeCompare(a.producto.toLowerCase()),
+  };
+
+  if (sortingActions[action]) {
+    sortedArray.sort(sortingActions[action]);
+  } else {
+    console.warn(`Acción de ordenamiento desconocida: ${action}`);
   }
-  return array;
+
+  return sortedArray;
 }
 
 @Injectable()
@@ -64,11 +59,14 @@ export class ProductosService {
   ) {}
 
   async findAll(skip: number, take: number, orderBy: string) {
-    const productos = await this.productoRepository.find();
-    const valorDolar = await this.dolaresService.obtenerUltimo();
-    const listadoCuotas = await this.cuotasService.obtenerValorCuotas();
+    const [productos, valorDolar, listadoCuotas] = await Promise.all([
+      this.productoRepository.find(),
+      this.dolaresService.obtenerUltimo(),
+      this.cuotasService.obtenerValorCuotas(),
+    ]);
 
     const listadoProductos = [];
+
     let productosSorted = handleOrder(orderBy, productos);
     productosSorted.map((prod) => {
       const dto = new ProductoDto();
