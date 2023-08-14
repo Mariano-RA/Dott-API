@@ -98,9 +98,11 @@ export class ProductosService {
   }
 
   async findByKeyWord(keywords: String[]) {
-    const productos = await this.productoRepository.find();
-    const valorDolar = await this.dolaresService.obtenerUltimo();
-    const listadoCuotas = await this.cuotasService.obtenerValorCuotas();
+    const [productos, valorDolar, listadoCuotas] = await Promise.all([
+      this.productoRepository.find(),
+      this.dolaresService.obtenerUltimo(),
+      this.cuotasService.obtenerValorCuotas(),
+    ]);
 
     const listadoProductos = [];
     productos
@@ -134,9 +136,11 @@ export class ProductosService {
     take: number,
     orderBy: string
   ) {
-    const productos = await this.productoRepository.find();
-    const valorDolar = await this.dolaresService.obtenerUltimo();
-    const listadoCuotas = await this.cuotasService.obtenerValorCuotas();
+    const [productos, valorDolar, listadoCuotas] = await Promise.all([
+      this.productoRepository.find(),
+      this.dolaresService.obtenerUltimo(),
+      this.cuotasService.obtenerValorCuotas(),
+    ]);
     const listadoProductos = [];
     let productosSorted = handleOrder(orderBy, productos);
     productosSorted
@@ -168,9 +172,11 @@ export class ProductosService {
     take: number,
     orderBy: string
   ) {
-    const productos = await this.productoRepository.find();
-    const valorDolar = await this.dolaresService.obtenerUltimo();
-    const listadoCuotas = await this.cuotasService.obtenerValorCuotas();
+    const [productos, valorDolar, listadoCuotas] = await Promise.all([
+      this.productoRepository.find(),
+      this.dolaresService.obtenerUltimo(),
+      this.cuotasService.obtenerValorCuotas(),
+    ]);
     const listadoProductos = [];
     let productosSorted = handleOrder(orderBy, productos);
     productosSorted
