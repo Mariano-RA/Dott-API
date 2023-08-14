@@ -44,6 +44,7 @@ export class ProductosService {
     const listadoProductos = [];
     productos.map((prod) => {
       const dto = new ProductoDto();
+      dto.id = prod.id;
       dto.proveedor = prod.proveedor;
       dto.producto = prod.producto;
       dto.categoria = prod.categoria;
@@ -85,6 +86,7 @@ export class ProductosService {
       )
       .map((prod) => {
         const dto = new ProductoDto();
+        dto.id = prod.id;
         dto.proveedor = prod.proveedor;
         dto.producto = prod.producto;
         dto.categoria = prod.categoria;
@@ -110,6 +112,7 @@ export class ProductosService {
       .filter((x) => x.categoria.toLowerCase().includes(category.toLowerCase()))
       .map((prod) => {
         const dto = new ProductoDto();
+        dto.id = prod.id;
         dto.proveedor = prod.proveedor;
         dto.producto = prod.producto;
         dto.categoria = prod.categoria;
@@ -146,6 +149,7 @@ export class ProductosService {
       )
       .map((prod) => {
         const dto = new ProductoDto();
+        dto.id = prod.id;
         dto.proveedor = prod.proveedor;
         dto.producto = prod.producto;
         dto.categoria = prod.categoria;
