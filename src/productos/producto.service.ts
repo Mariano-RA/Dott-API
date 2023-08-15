@@ -97,7 +97,12 @@ export class ProductosService {
     return categorias.sort();
   }
 
-  async findByKeyWord(keywords: String[], orderBy: string) {
+  async findByKeyWord(
+    keywords: String[],
+    skip: number,
+    take: number,
+    orderBy: string
+  ) {
     const [productos, valorDolar, listadoCuotas] = await Promise.all([
       this.productoRepository.find(),
       this.dolaresService.obtenerUltimo(),
@@ -128,7 +133,7 @@ export class ProductosService {
         );
         listadoProductos.push(dto);
       });
-    return listadoProductos.sort((a, b) => a.precioEfectivo - b.precioEfectivo);
+    return pagination(skip, take, listadoProductos);
   }
 
   async findByCategory(

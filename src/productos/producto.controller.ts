@@ -25,9 +25,11 @@ export class ProductosController {
   findByKeyWord(
     @Query("keywords", new ParseArrayPipe({ items: String, separator: "," }))
     keywords: String[],
+    @Query("skip") skip: number,
+    @Query("take") take: number,
     @Query("orderBy") orderBy: string
   ) {
-    return this.productosService.findByKeyWord(keywords, orderBy);
+    return this.productosService.findByKeyWord(keywords, skip, take, orderBy);
   }
 
   @Get("categoria/")
