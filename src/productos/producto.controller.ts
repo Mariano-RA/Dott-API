@@ -23,8 +23,8 @@ export class ProductosController {
 
   @Get("/buscarPorPalabrasClaves/")
   findByKeyWord(
-    @Query("keywords", new ParseArrayPipe({ items: String, separator: "," }))
-    keywords: String[],
+    // @Query("keywords", new ParseArrayPipe({ items: String, separator: "," }))
+    @Query("keywords") keywords: string,
     @Query("skip") skip: number,
     @Query("take") take: number,
     @Query("orderBy") orderBy: string

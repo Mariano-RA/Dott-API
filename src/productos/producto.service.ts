@@ -98,7 +98,7 @@ export class ProductosService {
   }
 
   async findByKeyWord(
-    keywords: String[],
+    keywords: String,
     skip: number,
     take: number,
     orderBy: string
@@ -109,11 +109,13 @@ export class ProductosService {
       this.cuotasService.obtenerValorCuotas(),
     ]);
 
+    const listadoPalabras = keywords.split(" ");
+
     const listadoProductos = [];
     let productosSorted = handleOrder(orderBy, productos);
     productosSorted
       .filter((x) =>
-        keywords.every((word) =>
+        listadoPalabras.every((word) =>
           x.producto.toLowerCase().includes(word.toLowerCase())
         )
       )
