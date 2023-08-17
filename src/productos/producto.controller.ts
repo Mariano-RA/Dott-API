@@ -1,11 +1,28 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Get, ParseArrayPipe, Query } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  ParseArrayPipe,
+  Post,
+  Query,
+} from "@nestjs/common";
 import { ProductosService } from "./producto.service";
 import { IsNull } from "typeorm";
+import { ProductoDto } from "./dto/productoDto";
+import { createProductoDto } from "./dto/createProductDto";
 
 @Controller("productos")
 export class ProductosController {
   constructor(private readonly productosService: ProductosService) {}
+
+  @Post()
+  updateTable(
+    @Query("id") id: string,
+    @Body() productDto: createProductoDto[]
+  ) {
+    return this.productosService.updateTable(id, productDto);
+  }
 
   @Get()
   findAll(

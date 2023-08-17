@@ -12,7 +12,7 @@ export class DolaresService {
     private readonly dolarRepository: Repository<Dolar>
   ) {}
 
-  async obtenerUltimo() {
+  async getLastOne() {
     const resDolar = await this.dolarRepository
       .createQueryBuilder()
       .select()
@@ -25,7 +25,7 @@ export class DolaresService {
     return dolarFinal;
   }
 
-  async agregarValor(dolarDto: DolarDto) {
+  async create(dolarDto: DolarDto) {
     try {
       await this.dolarRepository.save({ precioDolar: dolarDto.precioDolar });
       return "Se creo el registro correctamente";

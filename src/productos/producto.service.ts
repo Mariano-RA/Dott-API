@@ -6,6 +6,7 @@ import { ProductoDto } from "./dto/productoDto";
 import { Producto } from "./entities/producto.entity";
 import { CuotasService } from "src/cuota/cuota.service";
 import { valorCuotaDto } from "./dto/valorCuotaDto";
+import { createProductoDto } from "./dto/createProductDto";
 
 function obtenerPrecioEfectivo(monto, dolar) {
   return Math.round(monto * dolar);
@@ -58,11 +59,44 @@ export class ProductosService {
     private readonly productoRepository: Repository<Producto>
   ) {}
 
+  async updateTable(id: string, productDto: createProductoDto[]) {
+    try {
+      // Verificar si el proveedor con el ID dado existe
+      const proveedorExistente = await this.productoRepository.findOneBy({
+        proveedor: id,
+      });
+
+      if (!proveedorExistente) {
+        // Si no existe, crear nuevos registros
+        const arrProductos = await this.productoRepository.create(productDto);
+        await this.productoRepository.save(arrProductos);
+        return `Se crearon nuevos datos correspondientes a ${id} correctamente.`;
+      } else {
+        // Si existe, eliminar registros existentes y crear nuevos registros
+        await this.productoRepository.query(
+          `
+          DELETE FROM Productos WHERE proveedor = $1;
+          `,
+          [id]
+        );
+
+        const arrProductos = await this.productoRepository.create(productDto);
+        await this.productoRepository.save(arrProductos);
+
+        return `Se actualizaron los datos correspondientes a ${id} correctamente.`;
+      }
+    } catch (error) {
+      return (
+        error.message || "Ocurrió un error durante la actualización de datos."
+      );
+    }
+  }
+
   async findAll(skip: number, take: number, orderBy: string) {
     const [productos, valorDolar, listadoCuotas] = await Promise.all([
       this.productoRepository.find(),
-      this.dolaresService.obtenerUltimo(),
-      this.cuotasService.obtenerValorCuotas(),
+      this.dolaresService.getLastOne(),
+      this.cuotasService.findAll(),
     ]);
 
     const listadoProductos = [];
@@ -81,6 +115,7 @@ export class ProductosService {
       dto.precioCuotas = calcularValorCuotas(dto.precioEfectivo, listadoCuotas);
       listadoProductos.push(dto);
     });
+
     return pagination(skip, take, listadoProductos);
   }
 
@@ -105,8 +140,8 @@ export class ProductosService {
   ) {
     const [productos, valorDolar, listadoCuotas] = await Promise.all([
       this.productoRepository.find(),
-      this.dolaresService.obtenerUltimo(),
-      this.cuotasService.obtenerValorCuotas(),
+      this.dolaresService.getLastOne(),
+      this.cuotasService.findAll(),
     ]);
 
     const listadoPalabras = keywords.split(" ");
@@ -146,8 +181,8 @@ export class ProductosService {
   ) {
     const [productos, valorDolar, listadoCuotas] = await Promise.all([
       this.productoRepository.find(),
-      this.dolaresService.obtenerUltimo(),
-      this.cuotasService.obtenerValorCuotas(),
+      this.dolaresService.getLastOne(),
+      this.cuotasService.findAll(),
     ]);
     const listadoProductos = [];
     let productosSorted = handleOrder(orderBy, productos);
@@ -182,8 +217,8 @@ export class ProductosService {
   ) {
     const [productos, valorDolar, listadoCuotas] = await Promise.all([
       this.productoRepository.find(),
-      this.dolaresService.obtenerUltimo(),
-      this.cuotasService.obtenerValorCuotas(),
+      this.dolaresService.getLastOne(),
+      this.cuotasService.findAll(),
     ]);
     const listadoProductos = [];
     let productosSorted = handleOrder(orderBy, productos);

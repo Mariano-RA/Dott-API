@@ -8,12 +8,12 @@ export class DolaresController {
   constructor(private readonly dolaresService: DolaresService) {}
 
   @Get()
-  obtenerUltimo() {
-    return this.dolaresService.obtenerUltimo();
+  getLastOne() {
+    return this.dolaresService.getLastOne();
   }
 
   @Post()
-  agregarValor(@Body() dolarDto: DolarDto) {
-    return this.dolaresService.agregarValor(dolarDto);
+  create(@Body() dolarDto: DolarDto) {
+    return this.dolaresService.create(dolarDto);
   }
 }

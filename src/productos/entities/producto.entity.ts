@@ -14,6 +14,6 @@ export class Producto {
   @Column("text")
   categoria: string;
 
-  @Column("float")
+  @Column("int")
   precio: number;
 }
