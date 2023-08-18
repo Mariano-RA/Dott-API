@@ -1,7 +1,12 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { ForbiddenException, Injectable } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
-import * as bcrypt from "bcrypt";
+import * as argon from "argon2";
+import { AuthDto } from "./dto/auth.dto";
+import { Tokens } from "./types/tokens.type";
+import { JwtPayload } from "./types/jwtPayload.type";
+import { ConfigService } from "@nestjs/config";
+import { jwtConstants } from "./constans";
 
 @Injectable()
 export class AuthService {
@@ -10,49 +15,75 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
-  async generateTokens(payload) {
-    const access_token = await this.jwtService.signAsync(payload);
-    const refresh_token = await this.jwtService.signAsync(payload, {
-      expiresIn: "7d",
-    }); // Refresh token expires in 7 days
+  async signupLocal(dto: AuthDto): Promise<Tokens> {
+    const hash = await argon.hash(dto.password);
+    const user = await this.usersService.createUser(dto.email, hash);
+    console.log(user);
+    const tokens = await this.getTokens(user.id, user.email);
 
-    return { access_token, refresh_token };
+    await this.updateRtHash(user.id, tokens.refresh_token);
+    return tokens;
   }
 
-  async registerUser(username: string, password: string): Promise<void> {
-    await this.usersService.createUser(username, password);
+  async signinLocal(dto: AuthDto): Promise<Tokens> {
+    const user = await this.usersService.findOne(dto.email);
+
+    if (!user) throw new ForbiddenException("El usuario no existe");
+
+    const passwordMatches = await argon.verify(user.hash, dto.password);
+    if (!passwordMatches) throw new ForbiddenException("Contraseña incorrecta");
+
+    const tokens = await this.getTokens(user.id, user.email);
+
+    await this.updateRtHash(user.id, tokens.refresh_token);
+
+    return tokens;
   }
 
-  async signIn(username, pass) {
-    const user = await this.usersService.findOne(username);
-
-    if (!user || !(await bcrypt.compare(pass, user.password))) {
-      throw new UnauthorizedException("Credenciales inválidas");
-    }
-
-    const payload = { sub: user.id, username: user.username };
-    // const access_token = await this.jwtService.signAsync(payload);
-    const token = await this.generateTokens(payload);
-
-    return { token };
+  async logout(userId: number): Promise<boolean> {
+    await this.usersService.updateUser(userId, null);
+    return true;
   }
 
-  async refreshToken(refreshToken: string) {
-    try {
-      const decoded = await this.jwtService.verifyAsync(refreshToken);
-      console.log(decoded);
+  async refreshTokens(userId: number, rt: string): Promise<Tokens> {
+    const user = await this.usersService.findOneById(userId);
+    if (!user || !user.hashedRt)
+      throw new ForbiddenException("Acceso Denegado");
 
-      // Here you should implement your logic to check if the refresh token is valid and associated with a user
-      const user = await this.usersService.findOne(decoded.username);
-      if (!user) {
-        throw new UnauthorizedException("Usuario no encontrado");
-      }
+    const rtMatches = await argon.verify(user.hashedRt, rt);
+    if (!rtMatches) throw new ForbiddenException("Acceso Denegado");
 
-      const tokens = await this.generateTokens(user);
+    const tokens = await this.getTokens(user.id, user.email);
+    await this.updateRtHash(user.id, tokens.refresh_token);
 
-      return tokens;
-    } catch (error) {
-      throw new UnauthorizedException("Token de actualización inválido");
-    }
+    return tokens;
+  }
+
+  async updateRtHash(userId: number, rt: string): Promise<void> {
+    const hash = await argon.hash(rt);
+    await this.usersService.updateUser(userId, rt);
+  }
+
+  async getTokens(userId: number, email: string): Promise<Tokens> {
+    const jwtPayload: JwtPayload = {
+      sub: userId,
+      email: email,
+    };
+
+    const [at, rt] = await Promise.all([
+      this.jwtService.signAsync(jwtPayload, {
+        secret: jwtConstants.AT_SECRET,
+        expiresIn: "60sec",
+      }),
+      this.jwtService.signAsync(jwtPayload, {
+        secret: jwtConstants.RT_SECRET,
+        expiresIn: "7d",
+      }),
+    ]);
+
+    return {
+      access_token: at,
+      refresh_token: rt,
+    };
   }
 }

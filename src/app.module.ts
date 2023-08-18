@@ -10,22 +10,22 @@ import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from "path";
 import { Cuota } from "./cuota/entities/cuota.entity";
 import { CuotasModule } from "./cuota/cuota.module";
-import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
+import { AuthModule } from "./auth/auth.module";
+import { UsersModule } from "./users/users.module";
+import { User } from "./users/entities/user.entity";
 @Module({
   imports: [
     ProductosModule,
     TypeOrmModule.forRoot({
       type: "sqlite",
       database: "./database/productosDB.sqlite",
-      entities: [Dolar, Producto, Cuota],
+      entities: [Dolar, Producto, Cuota, User],
       synchronize: true,
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, "..", "client"),
     }),
     AuthModule,
-    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,47 +1,47 @@
 import {
   Body,
   Controller,
-  Get,
   HttpCode,
   HttpStatus,
   Post,
-  Request,
+  Query,
   UseGuards,
 } from "@nestjs/common";
-import { AuthGuard } from "./auth.guard";
+
 import { AuthService } from "./auth.service";
-import * as bcrypt from "bcrypt";
+import { AuthDto } from "./dto/auth.dto";
+import { Tokens } from "./types/tokens.type";
+import { RtGuard } from "./guards/rt.guard";
 
 @Controller("auth")
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @HttpCode(HttpStatus.OK)
-  @Post("login")
-  signIn(@Body() signInDto: { username: string; password: string }) {
-    const { username, password } = signInDto;
-    return this.authService.signIn(username, password);
+  @Post("signup")
+  @HttpCode(HttpStatus.CREATED)
+  signupLocal(@Body() dto: AuthDto): Promise<Tokens> {
+    return this.authService.signupLocal(dto);
   }
 
-  @UseGuards(AuthGuard)
-  @Get("profile")
-  getProfile(@Request() req) {
-    return req.user;
+  @Post("signin")
+  @HttpCode(HttpStatus.OK)
+  signinLocal(@Body() dto: AuthDto): Promise<Tokens> {
+    return this.authService.signinLocal(dto);
   }
 
+  @Post("logout")
   @HttpCode(HttpStatus.OK)
-  @Post("register")
-  async register(@Body() signInDto: { username: string; password: string }) {
-    const { username, password } = signInDto;
-    const hashedPassword = await bcrypt.hash(password, 10); // 10 salt rounds
-    return this.authService.registerUser(username, hashedPassword);
+  logout(userId: number): Promise<boolean> {
+    return this.authService.logout(userId);
   }
 
+  @UseGuards(RtGuard)
+  @Post("refresh")
   @HttpCode(HttpStatus.OK)
-  @Get("refresh-token")
-  async refreshToken(@Request() req) {
-    const refreshToken = req.headers["refresh-token"];
-    const tokens = await this.authService.refreshToken(refreshToken);
-    return tokens;
+  refreshTokens(
+    @Query() userId: number,
+    @Query("refreshToken") refreshToken: string
+  ): Promise<Tokens> {
+    return this.authService.refreshTokens(userId, refreshToken);
   }
 }
