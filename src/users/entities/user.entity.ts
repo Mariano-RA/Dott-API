@@ -11,6 +11,6 @@ export class User {
   @Column("text")
   hash: string;
 
-  @Column("text", { nullable: true })
-  hashedRt: string;
+  @Column({ type: "text", nullable: true })
+  hashedRt!: string;
 }

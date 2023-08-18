@@ -13,6 +13,8 @@ import { CuotasModule } from "./cuota/cuota.module";
 import { AuthModule } from "./auth/auth.module";
 import { UsersModule } from "./users/users.module";
 import { User } from "./users/entities/user.entity";
+import { APP_GUARD } from "@nestjs/core";
+import { AtGuard } from "./auth/guards/at.guard";
 @Module({
   imports: [
     ProductosModule,
@@ -28,6 +30,12 @@ import { User } from "./users/entities/user.entity";
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AtGuard,
+    },
+  ],
 })
 export class AppModule {}

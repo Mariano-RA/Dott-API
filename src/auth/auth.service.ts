@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
 import * as argon from "argon2";
@@ -7,6 +11,7 @@ import { Tokens } from "./types/tokens.type";
 import { JwtPayload } from "./types/jwtPayload.type";
 import { ConfigService } from "@nestjs/config";
 import { jwtConstants } from "./constans";
+import { RefreshDto } from "./dto/refresh.dto";
 
 @Injectable()
 export class AuthService {
@@ -15,14 +20,27 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
-  async signupLocal(dto: AuthDto): Promise<Tokens> {
-    const hash = await argon.hash(dto.password);
-    const user = await this.usersService.createUser(dto.email, hash);
-    console.log(user);
-    const tokens = await this.getTokens(user.id, user.email);
+  async signupLocal(dto: AuthDto) {
+    try {
+      const hash = await argon.hash(dto.password);
 
-    await this.updateRtHash(user.id, tokens.refresh_token);
-    return tokens;
+      const user = await this.usersService.createUser({
+        ...dto,
+        password: hash,
+      });
+
+      if (user.id != null) {
+        const tokens = await this.getTokens(user.id, user.email);
+        await this.updateRtHash(user.id, tokens.refresh_token);
+        return {
+          ...tokens,
+          id: user.id,
+        };
+      }
+      throw new BadRequestException("El usuario no pudo registrarse");
+    } catch (error) {
+      return error.response;
+    }
   }
 
   async signinLocal(dto: AuthDto): Promise<Tokens> {
@@ -45,12 +63,14 @@ export class AuthService {
     return true;
   }
 
-  async refreshTokens(userId: number, rt: string): Promise<Tokens> {
+  async refreshTokens(refreshDto: RefreshDto) {
+    const { userId, refreshToken } = refreshDto;
     const user = await this.usersService.findOneById(userId);
+
     if (!user || !user.hashedRt)
       throw new ForbiddenException("Acceso Denegado");
 
-    const rtMatches = await argon.verify(user.hashedRt, rt);
+    const rtMatches = await argon.verify(user.hashedRt, refreshToken);
     if (!rtMatches) throw new ForbiddenException("Acceso Denegado");
 
     const tokens = await this.getTokens(user.id, user.email);
@@ -73,7 +93,7 @@ export class AuthService {
     const [at, rt] = await Promise.all([
       this.jwtService.signAsync(jwtPayload, {
         secret: jwtConstants.AT_SECRET,
-        expiresIn: "60sec",
+        expiresIn: "60s",
       }),
       this.jwtService.signAsync(jwtPayload, {
         secret: jwtConstants.RT_SECRET,

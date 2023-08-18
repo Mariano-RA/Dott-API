@@ -19,10 +19,13 @@ export class DolaresService {
       .orderBy("id", "DESC")
       .getOne();
 
-    const dolarFinal = new Dolar();
-    dolarFinal.id = resDolar.id;
-    dolarFinal.precioDolar = resDolar.precioDolar;
-    return dolarFinal;
+    if (resDolar != null) {
+      const dolarFinal = new Dolar();
+      dolarFinal.id = resDolar.id;
+      dolarFinal.precioDolar = resDolar.precioDolar;
+      return dolarFinal;
+    }
+    return null;
   }
 
   async create(dolarDto: DolarDto) {

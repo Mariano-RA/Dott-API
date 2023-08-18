@@ -6,16 +6,20 @@ import {
   ParseArrayPipe,
   Post,
   Query,
+  UseGuards,
 } from "@nestjs/common";
 import { ProductosService } from "./producto.service";
 import { IsNull } from "typeorm";
 import { ProductoDto } from "./dto/productoDto";
 import { createProductoDto } from "./dto/createProductDto";
+import { RtGuard } from "src/auth/guards/rt.guard";
+import { Public } from "src/auth/decorators/public.decorator";
 
 @Controller("productos")
 export class ProductosController {
   constructor(private readonly productosService: ProductosService) {}
 
+  @UseGuards(RtGuard)
   @Post()
   updateTable(
     @Query("id") id: string,
@@ -24,6 +28,7 @@ export class ProductosController {
     return this.productosService.updateTable(id, productDto);
   }
 
+  @Public()
   @Get()
   findAll(
     @Query("skip") skip: number,
@@ -33,11 +38,13 @@ export class ProductosController {
     return this.productosService.findAll(skip, take, orderBy);
   }
 
+  @Public()
   @Get("categorias/")
   findAllCategories() {
     return this.productosService.findAllCategories();
   }
 
+  @Public()
   @Get("/buscarPorPalabrasClaves/")
   findByKeyWord(
     // @Query("keywords", new ParseArrayPipe({ items: String, separator: "," }))
@@ -49,6 +56,7 @@ export class ProductosController {
     return this.productosService.findByKeyWord(keywords, skip, take, orderBy);
   }
 
+  @Public()
   @Get("categoria/")
   findByCategory(
     @Query("category") category: string,
@@ -59,6 +67,7 @@ export class ProductosController {
     return this.productosService.findByCategory(category, skip, take, orderBy);
   }
 
+  @Public()
   @Get("palabrasClavesYCategoria/")
   findByKeyWordAndCategory(
     @Query("category") category: string,
