@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "./entities/user.entity";
@@ -11,7 +11,7 @@ export class UsersService {
     private readonly userRepository: Repository<User>
   ) {}
 
-  async findOne(email: string) {
+  async findOneByEmail(email: string) {
     return await this.userRepository.findOne({
       where: {
         email: email,
@@ -20,39 +20,42 @@ export class UsersService {
   }
 
   async findOneById(id: number) {
-    const user = await this.userRepository.findOne({
+    return await this.userRepository.findOne({
       where: {
         id: id,
       },
     });
-
-    return user;
   }
 
   async createUser(dto: AuthDto) {
-    try {
-      const { email, password } = dto;
-      const createdUser = await this.userRepository.save({
+    const { email, password } = dto;
+    const usuarioExistente = await this.findOneByEmail(email);
+
+    if (!usuarioExistente) {
+      return await this.userRepository.save({
         email: email,
         hash: password,
       });
-      return createdUser;
-    } catch (error) {
-      return error;
     }
+    throw new BadRequestException("Ya existe un usuario con ese email");
   }
 
   async updateUser(id: number, hash: string) {
-    try {
-      const user = await this.userRepository.findOneBy({
-        id: id,
-      });
-      if (user != null) {
-        const updatedUser = { ...user, hashedRt: hash };
-        await this.userRepository.save(updatedUser);
-      }
-    } catch (error) {
-      return error;
+    const user = await this.findOneById(id);
+    if (user) {
+      const updatedUser = { ...user, hashedRt: hash };
+      return await this.userRepository.save(updatedUser);
     }
+    throw new BadRequestException("No se pudo actualizar el usuario");
+  }
+
+  async cleanRt(id: number) {
+    console.log(id);
+    const user = await this.findOneById(id);
+    if (user) {
+      const updatedUser = { ...user, hashedRt: null };
+      return await this.userRepository.save(updatedUser);
+    }
+    throw new BadRequestException("No se pudo blanquear el rt");
   }
 }

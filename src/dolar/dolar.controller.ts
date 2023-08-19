@@ -15,7 +15,6 @@ export class DolaresController {
     return this.dolaresService.getLastOne();
   }
 
-  @UseGuards(RtGuard)
   @Post()
   create(@Body() dolarDto: DolarDto) {
     return this.dolaresService.create(dolarDto);

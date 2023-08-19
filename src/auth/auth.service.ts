@@ -7,11 +7,10 @@ import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
 import * as argon from "argon2";
 import { AuthDto } from "./dto/auth.dto";
-import { Tokens } from "./types/tokens.type";
 import { JwtPayload } from "./types/jwtPayload.type";
-import { ConfigService } from "@nestjs/config";
 import { jwtConstants } from "./constans";
-import { RefreshDto } from "./dto/refresh.dto";
+import { error } from "console";
+import { LogOutDto } from "./dto/logout.dto";
 
 @Injectable()
 export class AuthService {
@@ -29,49 +28,42 @@ export class AuthService {
         password: hash,
       });
 
-      if (user.id != null) {
+      if (user) {
         const tokens = await this.getTokens(user.id, user.email);
         await this.updateRtHash(user.id, tokens.refresh_token);
-        return {
-          ...tokens,
-          id: user.id,
-        };
+        return { ...tokens, id: user.id };
       }
-      throw new BadRequestException("El usuario no pudo registrarse");
     } catch (error) {
       return error.response;
     }
   }
 
-  async signinLocal(dto: AuthDto): Promise<Tokens> {
-    const user = await this.usersService.findOne(dto.email);
+  async signinLocal(dto: AuthDto) {
+    const user = await this.usersService.findOneByEmail(dto.email);
 
-    if (!user) throw new ForbiddenException("El usuario no existe");
+    if (!user) throw new ForbiddenException("Access Denied");
 
     const passwordMatches = await argon.verify(user.hash, dto.password);
-    if (!passwordMatches) throw new ForbiddenException("Contraseña incorrecta");
+    if (!passwordMatches) throw new ForbiddenException("Access Denied");
 
     const tokens = await this.getTokens(user.id, user.email);
-
     await this.updateRtHash(user.id, tokens.refresh_token);
 
     return tokens;
   }
 
-  async logout(userId: number): Promise<boolean> {
-    await this.usersService.updateUser(userId, null);
+  async logout(dto: LogOutDto) {
+    await this.usersService.cleanRt(dto.userId);
     return true;
   }
 
-  async refreshTokens(refreshDto: RefreshDto) {
-    const { userId, refreshToken } = refreshDto;
+  async refreshTokens(userId: number, rt: string) {
     const user = await this.usersService.findOneById(userId);
-
     if (!user || !user.hashedRt)
-      throw new ForbiddenException("Acceso Denegado");
+      throw new ForbiddenException("El usuario no existe");
 
-    const rtMatches = await argon.verify(user.hashedRt, refreshToken);
-    if (!rtMatches) throw new ForbiddenException("Acceso Denegado");
+    const rtMatches = await argon.verify(user.hashedRt, rt);
+    if (!rtMatches) throw new ForbiddenException("RT not matches");
 
     const tokens = await this.getTokens(user.id, user.email);
     await this.updateRtHash(user.id, tokens.refresh_token);
@@ -79,12 +71,12 @@ export class AuthService {
     return tokens;
   }
 
-  async updateRtHash(userId: number, rt: string): Promise<void> {
+  async updateRtHash(userId: number, rt: string) {
     const hash = await argon.hash(rt);
-    await this.usersService.updateUser(userId, rt);
+    await this.usersService.updateUser(userId, hash);
   }
 
-  async getTokens(userId: number, email: string): Promise<Tokens> {
+  async getTokens(userId: number, email: string) {
     const jwtPayload: JwtPayload = {
       sub: userId,
       email: email,
@@ -97,7 +89,7 @@ export class AuthService {
       }),
       this.jwtService.signAsync(jwtPayload, {
         secret: jwtConstants.RT_SECRET,
-        expiresIn: "7d",
+        expiresIn: "1d",
       }),
     ]);
 

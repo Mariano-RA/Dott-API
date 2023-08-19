@@ -19,13 +19,9 @@ import { Public } from "src/auth/decorators/public.decorator";
 export class ProductosController {
   constructor(private readonly productosService: ProductosService) {}
 
-  @UseGuards(RtGuard)
   @Post()
-  updateTable(
-    @Query("id") id: string,
-    @Body() productDto: createProductoDto[]
-  ) {
-    return this.productosService.updateTable(id, productDto);
+  updateTable(@Body() productDto: createProductoDto[]) {
+    return this.productosService.updateTable(productDto);
   }
 
   @Public()

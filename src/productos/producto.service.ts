@@ -59,9 +59,9 @@ export class ProductosService {
     private readonly productoRepository: Repository<Producto>
   ) {}
 
-  async updateTable(id: string, productDto: createProductoDto[]) {
+  async updateTable(productDto: createProductoDto[]) {
     try {
-      // Verificar si el proveedor con el ID dado existe
+      const id = productDto[0].proveedor;
       const proveedorExistente = await this.productoRepository.findOneBy({
         proveedor: id,
       });
