@@ -14,17 +14,18 @@ import { ProductoDto } from "./dto/productoDto";
 import { createProductoDto } from "./dto/createProductDto";
 import { RtGuard } from "src/auth/guards/rt.guard";
 import { Public } from "src/auth/decorators/public.decorator";
+import { AuthorizationGuard } from "src/authTest/authorization.guard";
 
 @Controller("productos")
 export class ProductosController {
   constructor(private readonly productosService: ProductosService) {}
 
+  @UseGuards(AuthorizationGuard)
   @Post()
   updateTable(@Body() productDto: createProductoDto[]) {
     return this.productosService.updateTable(productDto);
   }
 
-  @Public()
   @Get()
   findAll(
     @Query("skip") skip: number,
@@ -34,7 +35,6 @@ export class ProductosController {
     return this.productosService.findAll(skip, take, orderBy);
   }
 
-  @Public()
   @Get("categorias/")
   findAllCategories() {
     return this.productosService.findAllCategories();
@@ -52,7 +52,6 @@ export class ProductosController {
     return this.productosService.findByKeyWord(keywords, skip, take, orderBy);
   }
 
-  @Public()
   @Get("categoria/")
   findByCategory(
     @Query("category") category: string,
@@ -63,7 +62,6 @@ export class ProductosController {
     return this.productosService.findByCategory(category, skip, take, orderBy);
   }
 
-  @Public()
   @Get("palabrasClavesYCategoria/")
   findByKeyWordAndCategory(
     @Query("category") category: string,

@@ -15,8 +15,16 @@ import { UsersModule } from "./users/users.module";
 import { User } from "./users/entities/user.entity";
 import { APP_GUARD } from "@nestjs/core";
 import { AtGuard } from "./auth/guards/at.guard";
+
+import { PassportModule } from "@nestjs/passport";
+import { ConfigModule } from "@nestjs/config";
+
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    CuotasModule,
     ProductosModule,
     TypeOrmModule.forRoot({
       type: "sqlite",
@@ -27,15 +35,14 @@ import { AtGuard } from "./auth/guards/at.guard";
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, "..", "client"),
     }),
-    AuthModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
-    {
-      provide: APP_GUARD,
-      useClass: AtGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: AtGuard,
+    // },
   ],
 })
 export class AppModule {}
