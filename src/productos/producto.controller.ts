@@ -6,6 +6,7 @@ import {
   ParseArrayPipe,
   Post,
   Query,
+  SetMetadata,
   UseGuards,
 } from "@nestjs/common";
 import { ProductosService } from "./producto.service";
@@ -15,12 +16,14 @@ import { createProductoDto } from "./dto/createProductDto";
 import { RtGuard } from "src/auth/guards/rt.guard";
 import { Public } from "src/auth/decorators/public.decorator";
 import { AuthorizationGuard } from "src/authTest/authorization.guard";
+import { PermissionGuard } from "src/authTest/permission.guard";
 
 @Controller("productos")
 export class ProductosController {
   constructor(private readonly productosService: ProductosService) {}
 
-  @UseGuards(AuthorizationGuard)
+  @UseGuards(AuthorizationGuard, PermissionGuard)
+  @SetMetadata("permissions", ["create:tablas"])
   @Post()
   updateTable(@Body() productDto: createProductoDto[]) {
     return this.productosService.updateTable(productDto);
