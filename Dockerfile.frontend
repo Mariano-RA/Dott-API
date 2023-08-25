@@ -1,0 +1,7 @@
+# Utiliza una imagen base de Node.js
+FROM node:lts-slim AS builderFront
+
+WORKDIR "/front"
+COPY client/ .
+
+# Puedes agregar comandos adicionales según las necesidades de tu frontend

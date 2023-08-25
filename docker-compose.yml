@@ -1,0 +1,44 @@
+version: "3"
+services:
+  backend-builder:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    volumes:
+      - .:/back
+    container_name: backend-builder
+    command: ["npm", "run", "build"]
+
+  frontend-builder:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    volumes:
+      - ./client:/front/client
+    container_name: frontend-builder
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    volumes:
+      - .:/back
+    container_name: backend
+    depends_on:
+      - backend-builder
+    command: ["npm", "run", "prod"]
+
+  python-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./app:/app # Ajusta la ruta según la estructura de tus archivos
+    container_name: python-api
+
+  redis:
+    image: "redis:latest"
+    container_name: redis
+# Puedes agregar más servicios, bases de datos, etc. aquí según tus necesidades
