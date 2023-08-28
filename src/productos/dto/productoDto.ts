@@ -10,7 +10,7 @@ export class ProductoDto {
 
   categoria: string;
 
-  precioEfectivo: Double;
+  precioEfectivo: number;
 
   precioCuotas: valorCuotaDto[];
 }
